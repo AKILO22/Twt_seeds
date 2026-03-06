@@ -1,10 +1,221 @@
-# 🌱 Twt_seeds — BIP39 Seed Phrase Tool for Termux
+# 🌱 Twt_seeds — BIP39 Seed Phrase Tool + 📧 Email Monitor for Termux
 
-A comprehensive Python tool for capturing, validating, and analyzing BIP39 wallet seed phrases. Built for Termux (Android) with full desktop compatibility.
+A comprehensive Python toolset for Termux (Android) and desktop use, providing:
+1. **BIP39 Seed Phrase Tool** — generate, validate, and analyze wallet seed phrases
+2. **Email Monitor Tool** — monitor inboxes, verify email addresses, and analyze headers
 
 ---
 
-## Features
+## 📧 Email Monitor Tool
+
+### Features
+
+| Feature | Details |
+|---|---|
+| **Gmail Integration** | OAuth2 authentication, fetch last N emails, unread tracking |
+| **Outlook/Microsoft 365** | OAuth2 via device code flow (Termux compatible), Graph API |
+| **Generic IMAP** | Any IMAP provider, SSL/TLS, auto-server detection |
+| **Email Verification** | RFC 5322 format, DNS/MX lookup, SMTP RCPT TO, disposable detection |
+| **Header Analysis** | Parse SPF/DKIM/DMARC, routing hops, security risk scoring |
+| **Phishing Detection** | Keyword matching, suspicious URL/TLD detection, spoofing analysis |
+| **Multiple Exports** | Console, JSON, CSV, HTML reports |
+| **Audit Logging** | Timestamped activity logs |
+| **Secure Credentials** | OAuth2 tokens only — no plaintext passwords stored |
+| **Termux Compatible** | Device code OAuth2 flow, mobile-optimized display |
+
+### Quick Start
+
+```bash
+# Verify an email address
+python email_cli.py verify user@example.com
+
+# Monitor Gmail inbox (requires OAuth2 setup — see below)
+python email_cli.py monitor gmail --credentials credentials.json --count 10
+
+# Monitor Outlook inbox (requires Azure AD app — see below)
+python email_cli.py monitor outlook --client-id YOUR_CLIENT_ID
+
+# Monitor any IMAP inbox (auto-detects server from email domain)
+python email_cli.py monitor imap --email user@yahoo.com
+
+# Analyze a raw email for security issues
+python email_cli.py analyze --file suspicious_email.eml
+```
+
+### Installation
+
+#### Termux (Android)
+
+```bash
+pkg update && pkg upgrade
+pkg install python git
+pip install -r requirements.txt
+```
+
+#### Linux / macOS / Windows
+
+```bash
+git clone https://github.com/AKILO22/Twt_seeds.git
+cd Twt_seeds
+pip install -r requirements.txt
+```
+
+### Email Tool Commands
+
+#### Monitor — Gmail
+
+```bash
+# Fetch last 10 emails from Gmail
+python email_cli.py monitor gmail --credentials credentials.json
+
+# Fetch only unread emails, show 20, save to storage
+python email_cli.py monitor gmail --credentials credentials.json \
+    --count 20 --unread --save
+
+# Export to HTML report
+python email_cli.py monitor gmail --credentials credentials.json \
+    --format html --output inbox_report.html
+
+# Multiple accounts
+python email_cli.py monitor gmail --credentials creds_work.json --account work
+python email_cli.py monitor gmail --credentials creds_personal.json --account personal
+```
+
+#### Monitor — Outlook
+
+```bash
+# Fetch last 10 emails from Outlook (device code flow)
+python email_cli.py monitor outlook --client-id YOUR_AZURE_APP_ID
+
+# Fetch unread, export to JSON
+python email_cli.py monitor outlook --client-id YOUR_AZURE_APP_ID \
+    --unread --format json --output outlook.json
+```
+
+#### Monitor — IMAP (Any Provider)
+
+```bash
+# Auto-detect server from email address (prompts for password)
+python email_cli.py monitor imap --email user@yahoo.com
+
+# Explicit server settings
+python email_cli.py monitor imap --host imap.example.com --port 993 \
+    --email user@example.com
+
+# Fetch from a specific folder, unread only
+python email_cli.py monitor imap --email user@icloud.com \
+    --folder "Sent" --unread --count 5
+```
+
+#### Verify Email Addresses
+
+```bash
+# Verify a single address
+python email_cli.py verify user@example.com
+
+# Verify multiple addresses
+python email_cli.py verify addr1@a.com addr2@b.com addr3@c.com
+
+# Skip SMTP check (DNS only, faster)
+python email_cli.py verify user@example.com --skip-smtp
+
+# Export verification report as HTML
+python email_cli.py verify user@example.com addr2@b.com \
+    --format html --output verification_report.html
+
+# Save results to local storage
+python email_cli.py verify user@example.com --save
+```
+
+#### Analyze Email Headers
+
+```bash
+# Analyze a .eml file
+python email_cli.py analyze --file suspicious_email.eml
+
+# Read from stdin
+cat suspicious_email.eml | python email_cli.py analyze --stdin
+
+# Export HTML security report
+python email_cli.py analyze --file email.eml --format html --output header_report.html
+
+# Export JSON for further processing
+python email_cli.py analyze --file email.eml --format json
+```
+
+#### Manage Stored Data
+
+```bash
+# Show statistics
+python email_cli.py manage --action stats
+
+# Export email history to JSON
+python email_cli.py manage --action export-emails-json
+
+# Export email history to CSV
+python email_cli.py manage --action export-emails-csv
+
+# Export verification results
+python email_cli.py manage --action export-verifications
+
+# Purge all stored data
+python email_cli.py manage --action purge
+```
+
+### OAuth2 Setup
+
+#### Gmail Setup
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the **Gmail API**
+4. Go to **Credentials → Create Credentials → OAuth 2.0 Client IDs**
+5. Choose **Desktop App** as the application type
+6. Download the credentials JSON file (save as `credentials.json`)
+7. Run:
+
+```bash
+python email_cli.py monitor gmail --credentials credentials.json
+```
+
+A browser window will open for one-time authorization. Tokens are saved in `email_tokens/`.
+
+#### Outlook / Microsoft 365 Setup
+
+1. Go to [Azure Portal → App Registrations](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps)
+2. Click **New Registration**
+3. Name: any name, Supported account types: **Personal Microsoft accounts**
+4. Under **Authentication**, add a **Mobile and desktop application** platform with redirect URI `https://login.microsoftonline.com/common/oauth2/nativeclient`
+5. Copy the **Application (client) ID**
+6. Run:
+
+```bash
+python email_cli.py monitor outlook --client-id YOUR_CLIENT_ID
+```
+
+Follow the device code instructions printed to the terminal. No browser required — works in Termux.
+
+### Email Tool — Project Structure
+
+```
+email_monitor.py       # Main monitoring orchestrator
+email_verifier.py      # Email address verification (format, DNS, SMTP)
+header_analyzer.py     # Email header + security analysis
+gmail_auth.py          # Gmail OAuth2 authentication handler
+outlook_auth.py        # Outlook OAuth2 (MSAL) authentication handler
+imap_handler.py        # Generic IMAP handler (any provider)
+domain_checker.py      # DNS/MX/SPF/DKIM/DMARC/SMTP verification
+email_data_manager.py  # Data storage, export, audit logging
+email_reporter.py      # Report generation (JSON, CSV, HTML)
+email_cli.py           # CLI entry point for email tool
+EMAIL_SECURITY.md      # Security documentation
+```
+
+---
+
+## 🌱 Seed Phrase Tool (Original)
+
+### Features
 
 | Feature | Details |
 |---|---|
@@ -21,29 +232,7 @@ A comprehensive Python tool for capturing, validating, and analyzing BIP39 walle
 | **Secure Memory Clearing** | Best-effort overwrite of sensitive data in memory |
 | **Termux Compatibility** | `termux-clipboard-get/set` integration |
 
----
-
-## Installation
-
-### Termux (Android)
-
-```bash
-pkg update && pkg upgrade
-pkg install python git
-pip install -r requirements.txt
-```
-
-### Linux / macOS / Windows
-
-```bash
-git clone https://github.com/AKILO22/Twt_seeds.git
-cd Twt_seeds
-pip install -r requirements.txt
-```
-
----
-
-## Usage
+### Usage
 
 ### Generate a seed phrase
 
