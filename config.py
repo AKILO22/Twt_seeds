@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Configuration for Seed Phrase Generator
+Configuration for Seed Phrase Tool
 """
 
 # Entropy options (bits -> words)
@@ -31,6 +31,10 @@ ENTROPY_OPTIONS = {
 OUTPUT_DIR = 'output'
 DEFAULT_FORMAT = 'text'
 
+# Data storage
+DATA_DIR = 'data'
+ENABLE_ENCRYPTION = False  # Set True to encrypt stored phrases
+
 # Logging
 LOG_LEVEL = 'INFO'
 LOG_FILE = 'seed_generator.log'
@@ -38,3 +42,9 @@ LOG_FILE = 'seed_generator.log'
 # Security
 USE_SECURE_RANDOM = True
 REQUIRE_VALIDATION = True
+MASK_SENSITIVE_OUTPUT = False   # Set True to mask phrases in console output
+CLEAR_CLIPBOARD_AFTER_PASTE = True  # Auto-clear clipboard after capture
+
+# Analysis / Export
+DEFAULT_EXPORT_DIR = 'output'
+PBKDF2_ITERATIONS = 480000      # PBKDF2 iterations for key derivation
