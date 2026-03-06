@@ -1,0 +1,22 @@
+[
+  {
+    "index": 1,
+    "phrase": "public round soup attract more taxi supreme loud multiply jazz chicken giggle",
+    "entropy": "ad178f3f8768fdbcf67c21916eec9eb0",
+    "word_count": 12,
+    "entropy_bits": 128,
+    "valid": true,
+    "timestamp": "2026-03-06T10:26:24.083787",
+    "validation_message": "Valid BIP39 seed phrase"
+  },
+  {
+    "index": 2,
+    "phrase": "cruise child bunker funny record enrich impulse lens ketchup vicious fashion jump",
+    "entropy": "34a4fc79af1b3c961c8c0179fe714d3c",
+    "word_count": 12,
+    "entropy_bits": 128,
+    "valid": true,
+    "timestamp": "2026-03-06T10:26:24.084012",
+    "validation_message": "Valid BIP39 seed phrase"
+  }
+]
