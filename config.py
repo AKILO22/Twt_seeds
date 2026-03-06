@@ -1,7 +1,30 @@
 #!/usr/bin/env python3
 """
-Configuration for Seed Phrase Tool
+Configuration for Seed Phrase Tool and Email Monitor Tool
 """
+
+# ---------------------------------------------------------------------------
+# Email Monitor Configuration
+# ---------------------------------------------------------------------------
+
+# Default directories for email tool
+EMAIL_DATA_DIR = 'email_data'
+EMAIL_OUTPUT_DIR = 'output'
+EMAIL_TOKEN_DIR = 'email_tokens'
+
+# Fetch settings
+EMAIL_DEFAULT_MAX_RESULTS = 10
+
+# SMTP verification
+SMTP_TIMEOUT = 10              # Seconds for SMTP connection timeout
+SKIP_SMTP_VERIFICATION = False  # Set True to skip SMTP checks (faster, less accurate)
+
+# Security / Privacy
+EMAIL_MASK_SENDERS = False     # Mask sender addresses in console output
+
+# ---------------------------------------------------------------------------
+# Seed Phrase Tool Configuration (preserved)
+# ---------------------------------------------------------------------------
 
 # Entropy options (bits -> words)
 ENTROPY_OPTIONS = {
